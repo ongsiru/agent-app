@@ -8,9 +8,9 @@
 2. 그다음 CLI 위에 얇은 로컬 UI를 붙입니다.
 3. 마지막으로 VS Code custom agent 또는 chat participant로 연결합니다.
 
-현재 기준 진짜 실행 엔진은 CLI입니다. UI나 VS Code 연동은 모두 이 CLI를 감싸는 형태로 가는 것이 가장 안전합니다.
+현재 기준 실행 엔진은 CLI입니다. UI나 VS Code 연동은 이 CLI를 감싸는 형태로 가는 것이 가장 안전합니다.
 
-## 무엇을 하나요?
+## 워크플로우
 
 - 로컬 워크스페이스를 준비하거나 Git 저장소를 클론합니다.
 - 매니저 에이전트가 백엔드, 프론트엔드, 디자인 시스템, UX 역할로 작업을 나눕니다.
@@ -94,6 +94,14 @@ npm run dev -- --workspace "C:\path\to\your-project" --task "로그인 기능을
 npm run dev -- --workspace "C:\path\to\your-project" --task "작은 기능 하나만 추가하고 변경은 최소화" --max-iterations 1
 ```
 
+관리자가 만족할 때까지 반복하고 싶다면 `auto`를 쓸 수 있습니다.
+
+```bat
+npm run dev -- --workspace "C:\path\to\your-project" --task "작업을 끝까지 다듬어줘" --max-iterations auto
+```
+
+다만 `auto`도 비용과 무한 루프를 막기 위해 내부 safety cap에 걸리면 멈춥니다. 기본값은 `AUTO_MAX_ITERATIONS_SAFETY_CAP=12`입니다.
+
 ## Git 저장소를 클론해서 실행
 
 ```bat
@@ -108,7 +116,7 @@ npm run dev -- --git https://github.com/your-org/your-repo.git --branch feature/
 - `--git <url>`: 먼저 저장소를 클론한 뒤 실행
 - `--branch <name>`: 클론 후 새 브랜치를 만들고 체크아웃
 - `--task <text>`: 에이전트 시스템에 줄 작업 지시문
-- `--max-iterations <n>`: 이번 실행에서만 `MAX_ITERATIONS`를 덮어씀
+- `--max-iterations <n|auto>`: 이번 실행에서만 `MAX_ITERATIONS`를 덮어씀
 - `--help`: 도움말 출력
 
 규칙:
@@ -116,6 +124,7 @@ npm run dev -- --git https://github.com/your-org/your-repo.git --branch feature/
 - `--workspace`와 `--git`은 동시에 쓰지 않습니다.
 - `--branch`는 `--git`과 함께 사용할 때만 유효합니다.
 - 공백이 있는 작업 문장은 반드시 따옴표로 감쌉니다.
+- `auto`를 주면 관리자가 `accept`할 때까지 반복하지만, safety cap에 도달하면 종료합니다.
 
 ## 결과 파일
 
@@ -149,3 +158,4 @@ npm run dev -- --git https://github.com/your-org/your-repo.git --branch feature/
 - Git 클론이 실패하면 같은 터미널에서 `git --version`이 되는지 먼저 확인하세요.
 - 작업 문장이 잘려 들어가면 따옴표로 감싸세요.
 - 첫 실행을 더 안전하게 하고 싶으면 별도 브랜치에서 `--max-iterations 1`로 시작하세요.
+- 자동 반복을 더 길게 허용하고 싶으면 `.env`에서 `AUTO_MAX_ITERATIONS_SAFETY_CAP`를 조정하세요.

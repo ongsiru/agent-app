@@ -41,11 +41,19 @@ Local workspace:
 npm run dev -- --workspace "C:\path\to\project" --task "Implement login" --max-iterations 1
 ```
 
+Manager-driven auto loop:
+
+```bat
+npm run dev -- --workspace "C:\path\to\project" --task "Implement login and keep refining until accepted" --max-iterations auto
+```
+
 Git repo:
 
 ```bat
 npm run dev -- --git https://github.com/your-org/your-repo.git --branch feature/agent-run --task "Implement login" --max-iterations 1
 ```
+
+`auto` mode still respects the runtime safety cap from `AUTO_MAX_ITERATIONS_SAFETY_CAP`.
 
 ## Stage 2. Add A Small Local UI
 

@@ -1,5 +1,6 @@
 export type ProviderName = "openai" | "anthropic" | "google";
 export type ModelAlias = "gpt" | "codex" | "claude" | "gemini";
+export type IterationMode = number | "auto";
 export type AgentRole =
   | "manager"
   | "backendCoder"
@@ -126,7 +127,7 @@ export interface RunOptions {
   gitUrl?: string;
   branch?: string;
   task: string;
-  maxIterations: number;
+  maxIterations: IterationMode;
 }
 
 export interface ProviderRequest {
@@ -149,6 +150,7 @@ export interface RunSummary {
   sourceType: "local" | "git";
   accepted: boolean;
   iterationsCompleted: number;
+  requestedMaxIterations: IterationMode;
   finalReportPath: string;
   summaryJsonPath: string;
 }

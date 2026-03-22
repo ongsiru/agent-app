@@ -53,9 +53,12 @@ You can leave unused providers blank.
 Important runtime settings:
 
 - `MAX_ITERATIONS=3`
+- `AUTO_MAX_ITERATIONS_SAFETY_CAP=12`
 - `COMMAND_TIMEOUT_MS=600000`
 - `RUNS_DIR=./runs`
 - `CLONES_DIR=./workspaces/cloned-repos`
+
+`MAX_ITERATIONS` can be a number like `3` or the string `auto`.
 
 For a safer first run, it is fine to keep the file as-is and use `--max-iterations 1` on the command line.
 
@@ -92,6 +95,7 @@ You should see:
 - usage examples for `--workspace` and `--git`
 - the note about CMD vs PowerShell usage
 - the `--max-iterations` option
+- the fact that `auto` uses a safety cap
 
 ## 6. Do The First Real Run On A Local Workspace
 
@@ -109,6 +113,14 @@ Recommended first-run rules:
 - Keep the task narrow.
 - Start with `--max-iterations 1`.
 - Review the diff before trusting the result.
+
+If you later want the manager to keep reworking until it is satisfied, use:
+
+```bat
+npm run dev -- --workspace "C:\path\to\your-project" --task "Finish the task and keep iterating until the review passes" --max-iterations auto
+```
+
+Even in `auto` mode, the run still stops at `AUTO_MAX_ITERATIONS_SAFETY_CAP` to prevent runaway loops.
 
 If you want to run the agent against this repository itself, you can do that too:
 
@@ -213,6 +225,8 @@ Start smaller:
 - narrow the task
 - run on a separate branch
 - use `--max-iterations 1`
+
+If the manager is stopping too early in `auto` mode, increase `AUTO_MAX_ITERATIONS_SAFETY_CAP` in `.env`.
 
 ## 11. What To Build Next
 

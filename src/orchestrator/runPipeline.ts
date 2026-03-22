@@ -82,8 +82,23 @@ export async function runPipeline(options: RunOptions): Promise<RunSummary> {
   let diffText = "";
   let finalReport = "";
   let iterationsCompleted = 0;
+  let maxRounds: number;
 
-  for (let round = 1; round <= options.maxIterations; round += 1) {
+  if (options.maxIterations === "auto") {
+    maxRounds = Math.max(1, env.autoMaxIterationsSafetyCap);
+  } else {
+    maxRounds = options.maxIterations;
+  }
+
+  const autoIterationsEnabled = options.maxIterations === "auto";
+
+  if (autoIterationsEnabled) {
+    logger.log(
+      `Auto iteration mode enabled. The manager can keep reworking until acceptance, capped at ${maxRounds} rounds for safety.`
+    );
+  }
+
+  for (let round = 1; round <= maxRounds; round += 1) {
     iterationsCompleted = round;
     logger.log(`Starting iteration ${round}.`);
 
@@ -222,13 +237,17 @@ export async function runPipeline(options: RunOptions): Promise<RunSummary> {
   }
 
   if (!accepted) {
+    const endingNote = autoIterationsEnabled
+      ? `The run stopped after reaching the auto mode safety cap (${maxRounds} rounds) without a clean acceptance signal. Review the last manager decision, QA result, and diff before continuing manually.`
+      : `The run ended without a clean acceptance signal. Review the last manager decision, QA result, and diff before continuing manually.`;
+
     finalReport = [
       `# Final Report`,
       ``,
       `- accepted: false`,
       `- iterations attempted: ${iterationsCompleted}`,
       ``,
-      `The run ended without a clean acceptance signal. Review the last manager decision, QA result, and diff before continuing manually.`
+      endingNote
     ].join("\n");
   }
 
@@ -239,6 +258,7 @@ export async function runPipeline(options: RunOptions): Promise<RunSummary> {
     sourceType: context.sourceType,
     accepted,
     iterationsCompleted,
+    requestedMaxIterations: options.maxIterations,
     health: health.snapshot(),
     diffPath: path.join(context.runDir, `${String(iterationsCompleted).padStart(2, "0")}-diff.patch`)
   };
@@ -253,6 +273,7 @@ export async function runPipeline(options: RunOptions): Promise<RunSummary> {
     sourceType: context.sourceType,
     accepted,
     iterationsCompleted,
+    requestedMaxIterations: options.maxIterations,
     finalReportPath,
     summaryJsonPath
   };

@@ -1,10 +1,24 @@
 import "dotenv/config";
+import type { IterationMode } from "../types.js";
 
 function readNumber(name: string, fallback: number): number {
   const raw = process.env[name];
   if (!raw) return fallback;
   const parsed = Number(raw);
   return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function readIterationMode(name: string, fallback: IterationMode): IterationMode {
+  const raw = process.env[name]?.trim();
+  if (!raw) return fallback;
+  if (raw.toLowerCase() === "auto") return "auto";
+
+  const parsed = Number(raw);
+  if (Number.isInteger(parsed) && parsed >= 1) {
+    return parsed;
+  }
+
+  return fallback;
 }
 
 export const env = {
@@ -16,7 +30,8 @@ export const env = {
   anthropicClaudeModel: process.env.ANTHROPIC_CLAUDE_MODEL ?? "claude-sonnet-4-6",
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
   googleGeminiModel: process.env.GOOGLE_GEMINI_MODEL ?? "gemini-3.1-pro-preview",
-  maxIterations: readNumber("MAX_ITERATIONS", 3),
+  maxIterations: readIterationMode("MAX_ITERATIONS", 3),
+  autoMaxIterationsSafetyCap: readNumber("AUTO_MAX_ITERATIONS_SAFETY_CAP", 12),
   commandTimeoutMs: readNumber("COMMAND_TIMEOUT_MS", 600000),
   runsDir: process.env.RUNS_DIR ?? "./runs",
   clonesDir: process.env.CLONES_DIR ?? "./workspaces/cloned-repos",
