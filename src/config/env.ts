@@ -11,7 +11,7 @@ export const env = {
   openAiApiKey: process.env.OPENAI_API_KEY ?? "",
   openAiBaseUrl: process.env.OPENAI_BASE_URL ?? "",
   openAiGeneralModel: process.env.OPENAI_GENERAL_MODEL ?? "gpt-5.4",
-  openAiCodexModel: process.env.OPENAI_CODEX_MODEL ?? "gpt-5.2-codex",
+  openAiCodexModel: process.env.OPENAI_CODEX_MODEL ?? "gpt-5.3-codex",
   anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
   anthropicClaudeModel: process.env.ANTHROPIC_CLAUDE_MODEL ?? "claude-sonnet-4-6",
   geminiApiKey: process.env.GEMINI_API_KEY ?? "",
